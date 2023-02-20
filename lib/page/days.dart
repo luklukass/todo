@@ -15,16 +15,26 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
   List _selectedExercises = [];
 
 
-  Future<void> _saveSelectedExercises() async {
-    final dbFile = File('${(await getApplicationDocumentsDirectory()).path}/exercises.json');
-    final dbDirectory = dbFile.parent;
-    if (!await dbDirectory.exists()) {
-      await dbDirectory.create(recursive: true);
+  Future<void> _saveSelectedExercises(String dayOfWeek) async {
+    final dbDirectory = await getApplicationDocumentsDirectory();
+    final dbFilePath = '${dbDirectory.path}/$dayOfWeek.json';
+    final file = File(dbFilePath);
+
+    // Read the existing JSON data from the file
+    Map<String, dynamic> jsonData = {};
+    if (await file.exists()) {
+      final String contents = await file.readAsString();
+      jsonData = json.decode(contents);
     }
-    final exercisesData = {
-      'selectedExercises': _selectedExercises,
-    };
-    await dbFile.writeAsString(jsonEncode(exercisesData));
+
+    // Update the selected exercises for the current day
+    if (!jsonData.containsKey('selectedExercises')) {
+      jsonData['selectedExercises'] = [];
+    }
+    jsonData['selectedExercises'] = _selectedExercises;
+
+    // Write the updated JSON data back to the file
+    await file.writeAsString(json.encode(jsonData));
   }
 
   Future<String> _loadexerciseyAsset() async {
@@ -79,9 +89,8 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
       ),
       body: ListView.builder(
         itemCount: 7, // one for each day of the week
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: Text(_getDayOfWeek(index + 1)),
+        itemBuilder: (BuildContext context, int index) => ListTile(
+            title: Text(_getDayOfWeek(index+ 1)),
             subtitle: Text('Vyber si cvik'),
             trailing: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -92,87 +101,84 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (BuildContext context) {
-                                return SavedExercises(selectedExercises: _selectedExercises);
+                                return SavedExercises(
+                                    dayOfWeek: _getDayOfWeek(index+ 1),
+                                );
                               },
                             ),
                           );
                         },
                       ),
                       IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Výběr cviků'),
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: List<Widget>.generate(
-                                    _exercises.length,
-                                    (int i) {
-                                      return ExpansionTile(
-                                        title: Text(_exercises[i]['title']),
-                                        children: List<Widget>.generate(
-                                          _exercises[i]['exercises'].length,
-                                          (int j) {
-                                            return CheckboxListTile(
-                                            title: Text(
-                                                _exercises[i]['exercises'][j]['name']),
-                                            value: _selectedExercises.contains(
-                                                _exercises[i]['exercises'][j]['name']),
-                                            onChanged: (bool? value) {
-                                              setState(() {
-                                                if (value == true) {
-                                                  _selectedExercises.add(
-                                                      _exercises[i]['exercises'][j]
-                                                      ['name']);
-                                                } else {
-                                                  _selectedExercises.remove(
-                                                      _exercises[i]['exercises'][j]
-                                                      ['name']);
-                                                }
-                                              });
-                                          }
+                        icon: Icon(Icons.add),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Výběr cviků'),
+                                content: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: List<Widget>.generate(
+                                      _exercises.length,
+                                          (int i) {
+                                        return ExpansionTile(
+                                          title: Text(_exercises[i]['title']),
+                                          children: List<Widget>.generate(
+                                            _exercises[i]['exercises'].length,
+                                                (int j) {
+                                              return CheckboxListTile(
+                                                title: Text(
+                                                    _exercises[i]['exercises'][j]['name']),
+                                                value: _selectedExercises.contains(
+                                                    _exercises[i]['exercises'][j]['name']),
+                                                onChanged: (bool? value) {
+                                                  setState(() {
+                                                    if (value == true) {
+                                                      value = true;
+                                                      if (!_selectedExercises.contains(_exercises[i]['exercises'][j]['name'])) {
+                                                        _selectedExercises.add(_exercises[i]['exercises'][j]['name']);
+                                                      }
+                                                    } else {
+                                                      _selectedExercises.remove(
+                                                          _exercises[i]['exercises'][j]
+                                                          ['name']);
+                                                    }
+                                                  });
+                                                },
+                                              );
+                                            },
+                                          ),
                                         );
                                       },
                                     ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              child: Text('Zrušit'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            TextButton(
-                              child: Text('Uložit'),
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) {
-                                  return SavedExercises(selectedExercises: _selectedExercises);
-                                  Navigator.of(context).pop();
-
-                              },
-                               ),
-                            );
-                             },),
-                          ],
-                        );
-                      },
-                    );
-                  },
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('Zrušit'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Uložit'),
+                                    onPressed: () {
+                                      final dayOfWeek = _getDayOfWeek(index + 1);
+                                      _saveSelectedExercises(dayOfWeek);
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                  ],
                 ),
-              ]
             ),
-          );
-        },
       ),
     );
   }

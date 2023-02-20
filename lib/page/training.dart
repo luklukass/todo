@@ -1,66 +1,52 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'dart:convert';
+import 'package:path_provider/path_provider.dart';
+import 'package:todo/page/training.dart';
 
-class SavedExercises extends StatefulWidget {
-  final List selectedExercises;
+class SavedExercises extends StatelessWidget {
+  final String dayOfWeek;
 
-  SavedExercises({required this.selectedExercises});
+  SavedExercises({required this.dayOfWeek});
 
-  @override
-  _SavedExercisesState createState() => _SavedExercisesState();
-}
+  Future<Map<String, dynamic>> _loadSelectedExercises() async {
+    final dbDirectory = await getApplicationDocumentsDirectory();
+    final dbFilePath = '${dbDirectory.path}/$dayOfWeek.json';
+    final file = File(dbFilePath);
 
-class _SavedExercisesState extends State<SavedExercises> {
-  List _exercises = [];
+    if (await file.exists()) {
+      final String contents = await file.readAsString();
+      return json.decode(contents);
+    }
 
-  Future<String> _loadCVikyAsset() async {
-    return await rootBundle.loadString('assets/cviky.json');
-  }
-
-  Future<List<dynamic>> _getExercises() async {
-    String jsonString = await _loadCVikyAsset();
-    List<dynamic> exercises = jsonDecode(jsonString);
-    return exercises;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _getExercises().then((exercises) {
-      setState(() {
-        _exercises = exercises;
-      });
-    });
+    return {};
   }
 
   @override
   Widget build(BuildContext context) {
-    List selectedExerciseDetails = [];
-
-    for (var i = 0; i < _exercises.length; i++) {
-      for (var j = 0; j < _exercises[i]['exercises'].length; j++) {
-        if (widget.selectedExercises.contains(
-            _exercises[i]['exercises'][j]['name'])) {
-          selectedExerciseDetails.add({
-            'name': _exercises[i]['exercises'][j]['name'],
-            'title': _exercises[i]['title']
-          });
-        }
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Uložené cviky'),
+        title: Text(dayOfWeek),
       ),
-      body: ListView.builder(
-        itemCount: selectedExerciseDetails.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: Text(selectedExerciseDetails[index]['name']),
-            subtitle: Text(selectedExerciseDetails[index]['title']),
-          );
+      body: FutureBuilder(
+        future: _loadSelectedExercises(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            final List<dynamic> selectedExercises =
+                snapshot.data['selectedExercises'] ?? [];
+
+            return ListView.builder(
+              itemCount: selectedExercises.length,
+              itemBuilder: (BuildContext context, int index) => ListTile(
+                title: Text(selectedExercises[index]),
+              ),
+            );
+          } else {
+            return Center(
+              child: Text('Žádné cviky'),
+            );
+          }
         },
       ),
     );

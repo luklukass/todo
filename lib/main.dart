@@ -21,6 +21,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: {
         '/': (context) => HomePage(),
+        '/training': (context) => SavedExercises(dayOfWeek: '',),
+
       },
       initialRoute: '/',
     );

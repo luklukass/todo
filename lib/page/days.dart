@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
+import 'package:todo/page/training.dart';
 
 class TrainingPlanner extends StatefulWidget {
   @override
@@ -11,12 +14,25 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
   List _exercises = [];
   List _selectedExercises = [];
 
-  Future<String> _loadCVikyAsset() async {
+
+  Future<void> _saveSelectedExercises() async {
+    final dbFile = File('${(await getApplicationDocumentsDirectory()).path}/exercises.json');
+    final dbDirectory = dbFile.parent;
+    if (!await dbDirectory.exists()) {
+      await dbDirectory.create(recursive: true);
+    }
+    final exercisesData = {
+      'selectedExercises': _selectedExercises,
+    };
+    await dbFile.writeAsString(jsonEncode(exercisesData));
+  }
+
+  Future<String> _loadexerciseyAsset() async {
     return await rootBundle.loadString('assets/cviky.json');
   }
 
   Future<List<dynamic>> _getExercises() async {
-    String jsonString = await _loadCVikyAsset();
+    String jsonString = await _loadexerciseyAsset();
     List<dynamic> exercises = jsonDecode(jsonString);
     return exercises;
   }
@@ -72,7 +88,15 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                 children: [
                       IconButton(
                         icon: Icon(Icons.keyboard_arrow_right),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (BuildContext context) {
+                                return SavedExercises(selectedExercises: _selectedExercises);
+                              },
+                            ),
+                          );
+                        },
                       ),
                       IconButton(
                       icon: Icon(Icons.add),
@@ -129,10 +153,16 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                             TextButton(
                               child: Text('Uložit'),
                               onPressed: () {
-                                // save selected exercises to database or file
-                                Navigator.of(context).pop();
+                                Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) {
+                                  return SavedExercises(selectedExercises: _selectedExercises);
+                                  Navigator.of(context).pop();
+
                               },
-                            ),
+                               ),
+                            );
+                             },),
                           ],
                         );
                       },

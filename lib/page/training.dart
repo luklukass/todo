@@ -1,52 +1,121 @@
+
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:path_provider/path_provider.dart';
-import 'package:todo/page/training.dart';
 
-class SavedExercises extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+
+class SavedExercises extends StatefulWidget {
   final String dayOfWeek;
 
   SavedExercises({required this.dayOfWeek});
 
-  Future<Map<String, dynamic>> _loadSelectedExercises() async {
+  @override
+  _SavedExercisesState createState() => _SavedExercisesState();
+}
+
+class _SavedExercisesState extends State<SavedExercises> {
+  late Map<String, dynamic> _selectedExercises;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSelectedExercises();
+  }
+
+  Future<void> _loadSelectedExercises() async {
     final dbDirectory = await getApplicationDocumentsDirectory();
-    final dbFilePath = '${dbDirectory.path}/$dayOfWeek.json';
+    final dbFilePath = '${dbDirectory.path}/${widget.dayOfWeek}.json';
     final file = File(dbFilePath);
 
     if (await file.exists()) {
       final String contents = await file.readAsString();
-      return json.decode(contents);
+      setState(() {
+        _selectedExercises = json.decode(contents);
+      });
+    } else {
+      setState(() {
+        _selectedExercises = {};
+      });
     }
+  }
 
-    return {};
+  Future<void> _saveSelectedExercises() async {
+    final dbDirectory = await getApplicationDocumentsDirectory();
+    final dbFilePath = '${dbDirectory.path}/${widget.dayOfWeek}.json';
+    final file = File(dbFilePath);
+    await file.writeAsString(json.encode(_selectedExercises));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(dayOfWeek),
+        title: Text(widget.dayOfWeek),
       ),
-      body: FutureBuilder(
-        future: _loadSelectedExercises(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            final List<dynamic> selectedExercises =
-                snapshot.data['selectedExercises'] ?? [];
+      body: _selectedExercises == null
+          ? Center(
+        child: CircularProgressIndicator(),
+      )
+          : _selectedExercises.isEmpty
+          ? Center(
+        child: Text('Žádné cviky'),
+      )
+          : ListView.builder(
+        itemCount: _selectedExercises['selectedExercises'].length,
+        itemBuilder: (BuildContext context, int index) {
+          final exerciseDetails = _selectedExercises['selectedExercisesDetails'] != null && index < _selectedExercises['selectedExercisesDetails'].length ? _selectedExercises['selectedExercisesDetails'][index] : null;
+          final String repetitions = exerciseDetails != null ? exerciseDetails['repetitions'] : '';
+          final String time = exerciseDetails != null ? exerciseDetails['time'] : '';
+          final String series = exerciseDetails != null ? exerciseDetails['series'] : '';
 
-            return ListView.builder(
-              itemCount: selectedExercises.length,
-              itemBuilder: (BuildContext context, int index) => ListTile(
-                title: Text(selectedExercises[index]),
-              ),
-            );
-          } else {
-            return Center(
-              child: Text('Žádné cviky'),
-            );
-          }
+          return ListTile(
+            title: Text(
+              '${_selectedExercises['selectedExercises'][index]} ',
+            ),
+            subtitle: Row(
+              children: [
+                Text('opakování: '),
+                Flexible(
+                  child: TextField(
+                    controller: TextEditingController(text: repetitions),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedExercises['selectedExercisesDetails'][index]['repetitions'] = value;
+                        _saveSelectedExercises();
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(width: 10),
+                Text('čas: '),
+                Flexible(
+                  child: TextField(
+                    controller: TextEditingController(text: time),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedExercises['selectedExercisesDetails'][index]['time'] = value;
+                        _saveSelectedExercises();
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(width: 10),
+                Text('série: '),
+                Flexible(
+                  child: TextField(
+                    controller: TextEditingController(text: series),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedExercises['selectedExercisesDetails'][index]['series'] = value;
+                        _saveSelectedExercises();
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
         },
       ),
     );

@@ -1,7 +1,5 @@
-
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -15,7 +13,7 @@ class SavedExercises extends StatefulWidget {
 }
 
 class _SavedExercisesState extends State<SavedExercises> {
-  late Map<String, dynamic> _selectedExercises;
+  late Map<String, dynamic> _selectedExercises = {};
 
   @override
   void initState() {
@@ -64,24 +62,19 @@ class _SavedExercisesState extends State<SavedExercises> {
           : ListView.builder(
         itemCount: _selectedExercises['selectedExercises'].length,
         itemBuilder: (BuildContext context, int index) {
-          final exerciseDetails = _selectedExercises['selectedExercisesDetails'] != null && index < _selectedExercises['selectedExercisesDetails'].length ? _selectedExercises['selectedExercisesDetails'][index] : null;
-          final String repetitions = exerciseDetails != null ? exerciseDetails['repetitions'] : '';
-          final String time = exerciseDetails != null ? exerciseDetails['time'] : '';
-          final String series = exerciseDetails != null ? exerciseDetails['series'] : '';
+          final exercise = _selectedExercises['selectedExercises'][index];
 
           return ListTile(
-            title: Text(
-              '${_selectedExercises['selectedExercises'][index]} ',
-            ),
+            title: Text('${exercise['name']} '),
             subtitle: Row(
               children: [
                 Text('opakování: '),
                 Flexible(
                   child: TextField(
-                    controller: TextEditingController(text: repetitions),
+                    controller: TextEditingController(text: exercise['repetitions']),
                     onChanged: (value) {
                       setState(() {
-                        _selectedExercises['selectedExercisesDetails'][index]['repetitions'] = value;
+                        _selectedExercises['selectedExercises'][index]['repetitions'] = value;
                         _saveSelectedExercises();
                       });
                     },
@@ -91,10 +84,10 @@ class _SavedExercisesState extends State<SavedExercises> {
                 Text('čas: '),
                 Flexible(
                   child: TextField(
-                    controller: TextEditingController(text: time),
+                    controller: TextEditingController(text: exercise['time']),
                     onChanged: (value) {
                       setState(() {
-                        _selectedExercises['selectedExercisesDetails'][index]['time'] = value;
+                        _selectedExercises['selectedExercises'][index]['time'] = value;
                         _saveSelectedExercises();
                       });
                     },
@@ -104,10 +97,10 @@ class _SavedExercisesState extends State<SavedExercises> {
                 Text('série: '),
                 Flexible(
                   child: TextField(
-                    controller: TextEditingController(text: series),
+                    controller: TextEditingController(text: exercise['series']),
                     onChanged: (value) {
                       setState(() {
-                        _selectedExercises['selectedExercisesDetails'][index]['series'] = value;
+                        _selectedExercises['selectedExercises'][index]['series'] = value;
                         _saveSelectedExercises();
                       });
                     },

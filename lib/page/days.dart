@@ -12,7 +12,7 @@ class TrainingPlanner extends StatefulWidget {
 
 class _TrainingPlannerState extends State<TrainingPlanner> {
   List _exercises = [];
-  List _selectedExercises = [];
+  List<Map<String, dynamic>> _selectedExercises = [];
 
 
   Future<void> _saveSelectedExercises(String dayOfWeek) async {
@@ -31,7 +31,14 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
     if (!jsonData.containsKey('selectedExercises')) {
       jsonData['selectedExercises'] = [];
     }
-    jsonData['selectedExercises'] = _selectedExercises;
+    jsonData['selectedExercises'] = _selectedExercises.map((exercise) {
+      return {
+        'name': exercise['name'],
+        'repetition': exercise['repetition'],
+        'time': exercise['time'],
+        'series': exercise['series'],
+      };
+    }).toList();
 
     // Write the updated JSON data back to the file
     await file.writeAsString(json.encode(jsonData));
@@ -138,12 +145,20 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                                             if (value == true) {
                                               value = true;
                                               if (!_selectedExercises.contains(_exercises[i]['exercises'][j]['name'])) {
-                                                _selectedExercises.add(_exercises[i]['exercises'][j]['name']);
+                                                _selectedExercises.add({
+                                                  'name': _exercises[i]['exercises'][j]['name'],
+                                                  'repetition': _exercises[i]['exercises'][j]['repetition'],
+                                                  'time': _exercises[i]['exercises'][j]['time'],
+                                                  'series': _exercises[i]['exercises'][j]['series'],
+                                                });
                                               }
                                             } else {
-                                              _selectedExercises.remove(
-                                                  _exercises[i]['exercises'][j]
-                                                  ['name']);
+                                              _selectedExercises.remove({
+                                                'name': _exercises[i]['exercises'][j]['name'],
+                                                'repetition': _exercises[i]['exercises'][j]['repetition'],
+                                                'time': _exercises[i]['exercises'][j]['time'],
+                                                'series': _exercises[i]['exercises'][j]['series'],
+                                              });
                                             }
                                           });
                                         },

@@ -92,106 +92,126 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor:Colors.black87,
         title: Text('Plánovač tréninku'),
       ),
-      body: ListView.builder(
-        itemCount: 7, // one for each day of the week
-        itemBuilder: (BuildContext context, int index) => ListTile(
-          title: Text(_getDayOfWeek(index+ 1)),
-          subtitle: Text('Vyber si cvik'),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: Icon(Icons.keyboard_arrow_right),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
+      body: Container(
+        decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/vybaveni.jpg'), // Replace with your image file path
+          fit: BoxFit.cover,
+        ),
+      ),
+        child: ListView.builder(
+
+          itemCount: 7, // one for each day of the week
+          itemBuilder: (BuildContext context, int index) => ListTile(
+            title: Text(_getDayOfWeek(index+ 1),
+                style: TextStyle(color: Colors.yellowAccent,
+                fontWeight: FontWeight.bold,
+                fontSize: 23)),
+            subtitle: Text('Vyber si cvik',
+                style: TextStyle(color: Colors.deepOrangeAccent,
+                fontWeight: FontWeight.w500,
+                fontSize: 15)),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.keyboard_arrow_right,
+                    color: Colors.redAccent, // set the icon color to blue
+                    size: 30,),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return SavedExercises(
+                            dayOfWeek: _getDayOfWeek(index+ 1),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.add,
+                    color: Colors.redAccent, // set the icon color to blue
+                    size: 30),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
                       builder: (BuildContext context) {
-                        return SavedExercises(
-                          dayOfWeek: _getDayOfWeek(index+ 1),
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.add),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Výběr cviků'),
-                        content: SingleChildScrollView(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: List<Widget>.generate(
-                              _exercises.length,
-                                  (int i) {
-                                return ExpansionTile(
-                                  title: Text(_exercises[i]['title']),
-                                  children: List<Widget>.generate(
-                                    _exercises[i]['exercises'].length,
-                                        (int j) {
-                                      return CheckboxListTile(
-                                        title: Text(
-                                            _exercises[i]['exercises'][j]['name']),
-                                        value: _selectedExercises.contains(
-                                            _exercises[i]['exercises'][j]['name']),
-                                        onChanged: (bool? value) {
-                                          setState(() {
-                                            if (value == true) {
-                                              value = true;
-                                              if (!_selectedExercises.contains(_exercises[i]['exercises'][j]['name'])) {
-                                                _selectedExercises.add({
+                        return AlertDialog(
+                          title: Text('Výběr cviků'),
+                          content: SingleChildScrollView(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: List<Widget>.generate(
+                                _exercises.length,
+                                    (int i) {
+                                  return ExpansionTile(
+                                    title: Text(_exercises[i]['title']),
+                                    children: List<Widget>.generate(
+                                      _exercises[i]['exercises'].length,
+                                          (int j) {
+                                        return CheckboxListTile(
+                                          title: Text(
+                                              _exercises[i]['exercises'][j]['name']),
+                                          value: _selectedExercises.contains(
+                                              _exercises[i]['exercises'][j]['name']),
+                                          onChanged: (bool? value) {
+                                            setState(() {
+                                              if (value == true) {
+                                                value = true;
+                                                if (!_selectedExercises.contains(_exercises[i]['exercises'][j]['name'])) {
+                                                  _selectedExercises.add({
+                                                    'name': _exercises[i]['exercises'][j]['name'],
+                                                    'repetition': _exercises[i]['exercises'][j]['repetition'],
+                                                    'time': _exercises[i]['exercises'][j]['time'],
+                                                    'series': _exercises[i]['exercises'][j]['series'],
+                                                  });
+                                                }
+                                              } else {
+                                                _selectedExercises.remove({
                                                   'name': _exercises[i]['exercises'][j]['name'],
                                                   'repetition': _exercises[i]['exercises'][j]['repetition'],
                                                   'time': _exercises[i]['exercises'][j]['time'],
                                                   'series': _exercises[i]['exercises'][j]['series'],
                                                 });
                                               }
-                                            } else {
-                                              _selectedExercises.remove({
-                                                'name': _exercises[i]['exercises'][j]['name'],
-                                                'repetition': _exercises[i]['exercises'][j]['repetition'],
-                                                'time': _exercises[i]['exercises'][j]['time'],
-                                                'series': _exercises[i]['exercises'][j]['series'],
-                                              });
-                                            }
-                                          });
-                                        },
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
+                                            });
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            child: Text('Zrušit'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          TextButton(
-                            child: Text('Uložit'),
-                            onPressed: () {
-                              final dayOfWeek = _getDayOfWeek(index + 1);
-                              _saveSelectedExercises(dayOfWeek);
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-            ],
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('Zrušit'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: Text('Uložit'),
+                              onPressed: () {
+                                final dayOfWeek = _getDayOfWeek(index + 1);
+                                _saveSelectedExercises(dayOfWeek);
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

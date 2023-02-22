@@ -17,7 +17,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Training Planner',
-      theme: ThemeData(),
       debugShowCheckedModeBanner: false,
       routes: {
         '/': (context) => HomePage(),

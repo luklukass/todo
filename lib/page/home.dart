@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:todo/page/training.dart';
-
 import 'days.dart';
 
 class HomePage extends StatefulWidget {
@@ -9,18 +7,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
-
-  void _onDaySelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: TrainingPlanner(),
+    return Scaffold(
+      body: Container(
+        child: TrainingPlanner(),
+      ),
     );
   }
 }

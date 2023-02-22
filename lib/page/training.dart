@@ -15,11 +15,6 @@ class SavedExercises extends StatefulWidget {
 class _SavedExercisesState extends State<SavedExercises> {
   late Map<String, dynamic> _selectedExercises = {};
 
-  @override
-  void initState() {
-    super.initState();
-    _loadSelectedExercises();
-  }
 
   Future<void> _loadSelectedExercises() async {
     final dbDirectory = await getApplicationDocumentsDirectory();
@@ -47,6 +42,7 @@ class _SavedExercisesState extends State<SavedExercises> {
 
   @override
   Widget build(BuildContext context) {
+    _loadSelectedExercises();
     return Scaffold(
       appBar: AppBar(
         backgroundColor:Colors.black87,
@@ -61,16 +57,16 @@ class _SavedExercisesState extends State<SavedExercises> {
         ),
         child: _selectedExercises == null
             ? Center(
-                child: CircularProgressIndicator(),
-               )
+          child: CircularProgressIndicator(),
+        )
             : _selectedExercises.isEmpty
             ? Center(
-              child: Text('Nevybrány žádné cviky',
-                style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.red,
-                ),),
-               )
+          child: Text('Nevybrány žádné cviky',
+            style: TextStyle(
+              fontSize: 30,
+              color: Colors.red,
+            ),),
+        )
             : ListView.builder(
           itemCount: _selectedExercises['selectedExercises'].length,
           itemBuilder: (BuildContext context, int index) {
@@ -83,13 +79,13 @@ class _SavedExercisesState extends State<SavedExercises> {
                   color: Colors.greenAccent,
                   fontSize: 20,
                 ),
-              textAlign: TextAlign.center,),
+                textAlign: TextAlign.center,),
               subtitle: Row(
                 children: [
                   Text('opakování: ',
                     style: TextStyle(
-                  color: Colors.white,
-                     ),),
+                      color: Colors.white,
+                    ),),
                   Flexible(
                     child: TextField(
                       controller: TextEditingController(text: exercise['repetitions']),
@@ -100,7 +96,7 @@ class _SavedExercisesState extends State<SavedExercises> {
                         });
                       },
                       style: TextStyle(
-                        color: Colors.redAccent,
+                          color: Colors.redAccent,
                           fontSize: 20,
                           fontWeight: FontWeight.bold
                       ),
@@ -121,7 +117,7 @@ class _SavedExercisesState extends State<SavedExercises> {
                         });
                       },
                       style: TextStyle(
-                        color: Colors.redAccent,
+                          color: Colors.redAccent,
                           fontSize: 20,
                           fontWeight: FontWeight.bold
                       ),
@@ -142,13 +138,26 @@ class _SavedExercisesState extends State<SavedExercises> {
                         });
                       },
                       style: TextStyle(
-                        color: Colors.redAccent,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold
+                          color: Colors.redAccent,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold
                       ),
                     ),
                   ),
                 ],
+
+              ),
+              trailing: IconButton(
+                icon: Icon(Icons.delete,
+                    color: Colors.redAccent, // set the icon color to blue
+                    size: 30),
+                onPressed: () {
+                  setState(() {
+                    _selectedExercises['selectedExercises'].removeAt(index);
+                    _saveSelectedExercises();
+
+                  });
+                },
               ),
             );
           },

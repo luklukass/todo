@@ -97,23 +97,23 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
       ),
       body: Container(
         decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/vybaveni.jpg'), // Replace with your image file path
-          fit: BoxFit.cover,
+          image: DecorationImage(
+            image: AssetImage('assets/vybaveni.jpg'), // Replace with your image file path
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
         child: ListView.builder(
 
           itemCount: 7, // one for each day of the week
           itemBuilder: (BuildContext context, int index) => ListTile(
             title: Text(_getDayOfWeek(index+ 1),
                 style: TextStyle(color: Colors.yellowAccent,
-                fontWeight: FontWeight.bold,
-                fontSize: 23)),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 23)),
             subtitle: Text('Vyber si cvik',
                 style: TextStyle(color: Colors.deepOrangeAccent,
-                fontWeight: FontWeight.w500,
-                fontSize: 15)),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 15)),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -135,8 +135,8 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                 ),
                 IconButton(
                   icon: Icon(Icons.add,
-                    color: Colors.redAccent, // set the icon color to blue
-                    size: 30),
+                      color: Colors.redAccent, // set the icon color to blue
+                      size: 30),
                   onPressed: () {
                     showDialog(
                       context: context,
@@ -154,34 +154,36 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                                     children: List<Widget>.generate(
                                       _exercises[i]['exercises'].length,
                                           (int j) {
-                                        return CheckboxListTile(
-                                          title: Text(
-                                              _exercises[i]['exercises'][j]['name']),
-                                          value: _selectedExercises.contains(
-                                              _exercises[i]['exercises'][j]['name']),
-                                          onChanged: (bool? value) {
-                                            setState(() {
-                                              if (value == true) {
-                                                value = true;
-                                                if (!_selectedExercises.contains(_exercises[i]['exercises'][j]['name'])) {
-                                                  _selectedExercises.add({
-                                                    'name': _exercises[i]['exercises'][j]['name'],
-                                                    'repetition': _exercises[i]['exercises'][j]['repetition'],
-                                                    'time': _exercises[i]['exercises'][j]['time'],
-                                                    'series': _exercises[i]['exercises'][j]['series'],
-                                                  });
-                                                }
-                                              } else {
-                                                _selectedExercises.remove({
-                                                  'name': _exercises[i]['exercises'][j]['name'],
-                                                  'repetition': _exercises[i]['exercises'][j]['repetition'],
-                                                  'time': _exercises[i]['exercises'][j]['time'],
-                                                  'series': _exercises[i]['exercises'][j]['series'],
+                                            return TextButton(
+                                              onPressed: () {
+                                                // Add exercise to selected exercises
+                                                setState(() {
+
+                                                    _selectedExercises.add({
+                                                      'name': _exercises[i]['exercises'][j]['name'],
+                                                      'repetition': _exercises[i]['exercises'][j]['repetition'],
+                                                      'time': _exercises[i]['exercises'][j]['time'],
+                                                      'series': _exercises[i]['exercises'][j]['series'],
+                                                    });
+                                                    _saveSelectedExercises(_getDayOfWeek(index+1));
                                                 });
-                                              }
-                                            });
-                                          },
-                                        );
+                                              },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.black54,
+                                                  borderRadius: BorderRadius.all(Radius.circular(5))
+                                              ),
+                                              width: double.infinity,
+                                                height: 40,
+
+                                                child: Center(
+                                                child: Text(_exercises[i]['exercises'][j]['name'],
+                                            style: TextStyle(color: Colors.white, fontSize: 15.0),
+                                                  textAlign: TextAlign.center,
+                                                   ),),
+                                            ),
+                                            );
+
                                       },
                                     ),
                                   );
@@ -193,14 +195,6 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                             TextButton(
                               child: Text('Zrušit'),
                               onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            TextButton(
-                              child: Text('Uložit'),
-                              onPressed: () {
-                                final dayOfWeek = _getDayOfWeek(index + 1);
-                                _saveSelectedExercises(dayOfWeek);
                                 Navigator.of(context).pop();
                               },
                             ),

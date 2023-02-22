@@ -100,13 +100,17 @@ class _SavedExercisesState extends State<SavedExercises> {
                           fontSize: 20,
                           fontWeight: FontWeight.bold
                       ),
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.number,
                     ),
                   ),
                   SizedBox(width: 10),
                   Text('čas: ',
                     style: TextStyle(
                       color: Colors.white,
-                    ),),
+                    ),
+
+                  ),
                   Flexible(
                     child: TextField(
                       controller: TextEditingController(text: exercise['time']),
@@ -121,13 +125,16 @@ class _SavedExercisesState extends State<SavedExercises> {
                           fontSize: 20,
                           fontWeight: FontWeight.bold
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   SizedBox(width: 10),
                   Text('série: ',
                     style: TextStyle(
                       color: Colors.white,
-                    ),),
+                    ),
+
+                  ),
                   Flexible(
                     child: TextField(
                       controller: TextEditingController(text: exercise['series']),
@@ -142,6 +149,8 @@ class _SavedExercisesState extends State<SavedExercises> {
                           fontSize: 20,
                           fontWeight: FontWeight.bold
                       ),
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.number,
                     ),
                   ),
                 ],

@@ -1,6 +1,6 @@
 {
-    "name": "todo",
-    "short_name": "todo",
+    "name": "training_planner_v1",
+    "short_name": "training_planner_v1",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

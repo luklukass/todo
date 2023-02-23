@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
-import 'package:todo/page/training.dart';
+import 'package:training_planner_v1/page/training.dart';
 
 class TrainingPlanner extends StatefulWidget {
   @override

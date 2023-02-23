@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:todo/page/home.dart';
-import 'package:todo/page/training.dart';
+import 'package:training_planner_v1/page/home.dart';
+import 'package:training_planner_v1/page/training.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

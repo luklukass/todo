@@ -135,7 +135,7 @@ class _SavedExercisesState extends State<SavedExercises> {
                           fontWeight: FontWeight.bold
                       ),
                       textAlign: TextAlign.center,
-                      // here is not define input type - can be due to input values like 2min, 30s etc.
+
                     ),
                   ),
                   SizedBox(width: 10),// size of editable box

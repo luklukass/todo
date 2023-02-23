@@ -93,7 +93,7 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor:Colors.black87,
-        title: Text('Plánovač tréninku'),
+        title: Text('Tréninkový plánovač'),
       ),
       body: Container(
         decoration: const BoxDecoration(

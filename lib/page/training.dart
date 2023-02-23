@@ -111,7 +111,6 @@ class _SavedExercisesState extends State<SavedExercises> {
                           fontWeight: FontWeight.bold
                       ),
                       textAlign: TextAlign.center,
-                      keyboardType: TextInputType.number,// define that the input type is number - number keyboard is displayed
                     ),
                   ),
                   SizedBox(width: 10),// size of editable box
@@ -161,7 +160,6 @@ class _SavedExercisesState extends State<SavedExercises> {
                           fontWeight: FontWeight.bold
                       ),
                       textAlign: TextAlign.center,
-                      keyboardType: TextInputType.number,// define that the input type is number - number keyboard is displayed
                     ),
                   ),
                 ],

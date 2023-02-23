@@ -1,3 +1,13 @@
+/*
+Lichnovsky Lukas
+
+Feb 2023
+
+KMI/XPROJ
+
+This file is to create Home page
+*/
+
 import 'package:flutter/material.dart';
 import 'days.dart';
 

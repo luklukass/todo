@@ -1,3 +1,14 @@
+/*
+Lichnovsky Lukas
+
+Feb 2023
+
+KMI/XPROJ
+
+This is a file to create a home page with days of the week and then a selection of exercises from the database
+
+*/
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -11,27 +22,27 @@ class TrainingPlanner extends StatefulWidget {
 }
 
 class _TrainingPlannerState extends State<TrainingPlanner> {
-  List _exercises = [];
-  List<Map<String, dynamic>> _selectedExercises = [];
+  List _exercises = []; //list of all exercises
+  List<Map<String, dynamic>> _selectedExercises = []; //list of selected exercises
 
 
-  Future<void> _saveSelectedExercises(String dayOfWeek) async {
-    final dbDirectory = await getApplicationDocumentsDirectory();
-    final dbFilePath = '${dbDirectory.path}/$dayOfWeek.json';
+  Future<void> _saveSelectedExercises(String dayOfWeek) async { //function to save selected exercises
+    final dbDirectory = await getApplicationDocumentsDirectory();// path to store user generated app data
+    final dbFilePath = '${dbDirectory.path}/$dayOfWeek.json'; // load exercises from JSON file, where name of this file depends on selected day of week
     final file = File(dbFilePath);
 
-    // Read the existing JSON data from the file
+
     Map<String, dynamic> jsonData = {};
     if (await file.exists()) {
-      final String contents = await file.readAsString();
+      final String contents = await file.readAsString();// read the existing JSON data from the file
       jsonData = json.decode(contents);
     }
 
-    // Update the selected exercises for the current day
+
     if (!jsonData.containsKey('selectedExercises')) {
-      jsonData['selectedExercises'] = [];
+      jsonData['selectedExercises'] = [];// update the selected exercises for the current day
     }
-    jsonData['selectedExercises'] = _selectedExercises.map((exercise) {
+    jsonData['selectedExercises'] = _selectedExercises.map((exercise) { // mapping of JSON file
       return {
         'name': exercise['name'],
         'repetition': exercise['repetition'],
@@ -40,16 +51,16 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
       };
     }).toList();
 
-    // Write the updated JSON data back to the file
-    await file.writeAsString(json.encode(jsonData));
+
+    await file.writeAsString(json.encode(jsonData)); // write the updated JSON data back to the file
   }
 
-  Future<String> _loadexerciseyAsset() async {
+  Future<String> _loadexerciseAsset() async { //loading of main exercise database
     return await rootBundle.loadString('assets/cviky.json');
   }
 
-  Future<List<dynamic>> _getExercises() async {
-    String jsonString = await _loadexerciseyAsset();
+  Future<List<dynamic>> _getExercises() async { //getting of exercises from previous loading function
+    String jsonString = await _loadexerciseAsset();
     List<dynamic> exercises = jsonDecode(jsonString);
     return exercises;
   }
@@ -57,8 +68,8 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
 
 
   @override
-  void initState() {
-    super.initState();
+  void initState() { // it is method which is called when app is started and exercises loaded
+    super.initState();// entry point to all app
     _getExercises().then((exercises) {
       setState(() {
         _exercises = exercises;
@@ -67,7 +78,7 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
   }
 
 
-  String _getDayOfWeek(int weekday) {
+  String _getDayOfWeek(int weekday) {// function to get day of week
     switch (weekday) {
       case DateTime.monday:
         return 'Pondělí';
@@ -91,94 +102,94 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor:Colors.black87,
-        title: Text('Tréninkový plánovač'),
+      appBar: AppBar( //header of home page
+        backgroundColor:Colors.black87,// setting o background color
+        title: Text('Tréninkový plánovač'),//displayed header text
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: const BoxDecoration(//setting of background of home page
           image: DecorationImage(
-            image: AssetImage('assets/vybaveni.jpg'), // Replace with your image file path
+            image: AssetImage('assets/vybaveni.jpg'), // image from assets as background
             fit: BoxFit.cover,
           ),
         ),
         child: ListView.builder(
 
           itemCount: 7, // one for each day of the week
-          itemBuilder: (BuildContext context, int index) => ListTile(
-            title: Text(_getDayOfWeek(index+ 1),
-                style: TextStyle(color: Colors.yellowAccent,
+          itemBuilder: (BuildContext context, int index) => ListTile(// create  list with days of week
+            title: Text(_getDayOfWeek(index+ 1),//create title for every day
+                style: TextStyle(color: Colors.yellowAccent,//setting style of text
                     fontWeight: FontWeight.bold,
                     fontSize: 23)),
-            subtitle: Text('Vyber si cvik',
-                style: TextStyle(color: Colors.deepOrangeAccent,
+            subtitle: Text('Vyber si cvik',//subtitle for every day
+                style: TextStyle(color: Colors.deepOrangeAccent,//setting style of subtitle
                     fontWeight: FontWeight.w500,
                     fontSize: 15)),
-            trailing: Row(
+            trailing: Row(//create row with buttons - icons
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
-                  icon: Icon(Icons.keyboard_arrow_right,
-                    color: Colors.redAccent, // set the icon color to blue
+                IconButton(//button
+                  icon: Icon(Icons.keyboard_arrow_right,//arrow icon to button
+                    color: Colors.redAccent, // set the icon color to red
                     size: 30,),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
+                  onPressed: () {//what to do on pressed of icon
+                    Navigator.of(context).push(//navigate to new screen
+                      MaterialPageRoute(//
                         builder: (BuildContext context) {
-                          return SavedExercises(
-                            dayOfWeek: _getDayOfWeek(index+ 1),
+                          return SavedExercises(//new screen -widget - file training.dart
+                            dayOfWeek: _getDayOfWeek(index+ 1),//required data to the new screen - widget file training.dart
                           );
                         },
                       ),
                     );
                   },
                 ),
-                IconButton(
-                  icon: Icon(Icons.add,
-                      color: Colors.redAccent, // set the icon color to blue
+                IconButton(//button
+                  icon: Icon(Icons.add,//add icon of button
+                      color: Colors.redAccent, // set the icon color to red
                       size: 30),
-                  onPressed: () {
-                    showDialog(
+                  onPressed: () {//what to do on pressed of icon
+                    showDialog(//show dialog window
                       context: context,
                       builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Výběr cviků'),
-                          content: SingleChildScrollView(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: List<Widget>.generate(
-                                _exercises.length,
+                        return AlertDialog( // create dialog window
+                          title: Text('Výběr cviků'),// title of dialog
+                          content: SingleChildScrollView(//simple scrolling of widget
+                            child: Column(//return column with children
+                              mainAxisSize: MainAxisSize.min,// in column is main axis vertical - this set the min of height of children
+                              children: List<Widget>.generate(//generating of partition list
+                                _exercises.length,// length of list
                                     (int i) {
-                                  return ExpansionTile(
-                                    title: Text(_exercises[i]['title']),
-                                    children: List<Widget>.generate(
-                                      _exercises[i]['exercises'].length,
+                                  return ExpansionTile(// create expansion/ collapse partition field - it is possible to see exercises to certain partition
+                                    title: Text(_exercises[i]['title']),//title of partition
+                                    children: List<Widget>.generate(//generating of exercises list
+                                      _exercises[i]['exercises'].length,// length of list
                                           (int j) {
-                                            return TextButton(
-                                              onPressed: () {
-                                                // Add exercise to selected exercises
+                                            return TextButton(// every exercise is button
+                                              onPressed: () {// set what to do on pressed
+
                                                 setState(() {
 
-                                                    _selectedExercises.add({
+                                                    _selectedExercises.add({//on pressed add exercise to the list with selected exercises
                                                       'name': _exercises[i]['exercises'][j]['name'],
                                                       'repetition': _exercises[i]['exercises'][j]['repetition'],
                                                       'time': _exercises[i]['exercises'][j]['time'],
                                                       'series': _exercises[i]['exercises'][j]['series'],
                                                     });
-                                                    _saveSelectedExercises(_getDayOfWeek(index+1));
+                                                    _saveSelectedExercises(_getDayOfWeek(index+1));//calling of function to save this list for current day
                                                 });
                                               },
-                                            child: Container(
+                                            child: Container(// setting of visual of button
                                               decoration: BoxDecoration(
-                                                  color: Colors.black54,
-                                                  borderRadius: BorderRadius.all(Radius.circular(5))
+                                                  color: Colors.black54,//set color of button
+                                                  borderRadius: BorderRadius.all(Radius.circular(5))//set circular corners of button
                                               ),
-                                              width: double.infinity,
+                                              width: double.infinity,//max width
                                                 height: 40,
 
-                                                child: Center(
-                                                child: Text(_exercises[i]['exercises'][j]['name'],
-                                            style: TextStyle(color: Colors.white, fontSize: 15.0),
+                                                child: Center(// set text of every button
+                                                child: Text(_exercises[i]['exercises'][j]['name'],//name of button generated from JSON database
+                                            style: TextStyle(color: Colors.white, fontSize: 15.0),//set color of text
                                                   textAlign: TextAlign.center,
                                                    ),),
                                             ),
@@ -192,10 +203,10 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                             ),
                           ),
                           actions: <Widget>[
-                            TextButton(
-                              child: Text('Zrušit'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
+                            TextButton(//button zrusit
+                              child: Text('Zrušit'),//tilte of button
+                              onPressed: () {//what to do on pressed
+                                Navigator.of(context).pop();//close current alert dialog
                               },
                             ),
                           ],

@@ -1,3 +1,14 @@
+/*
+Lichnovsky Lukas
+
+Feb 2023
+
+KMI/XPROJ
+
+Main file to run app
+*/
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:training_planner_v1/page/home.dart';

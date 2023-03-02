@@ -144,8 +144,8 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                   icon: Icon(Icons.add,//add icon of button
                       color: Colors.redAccent, // set the icon color to red
                       size: 30),
-                  onPressed: () {
-                    _selectedExercises.clear();//what to do on pressed of icon
+                  onPressed: () {//what to do on pressed of icon
+                    _selectedExercises.clear();// this is was added due problem with adding exercises to certain day, now this list is cleaned after click on every add icon
                     showDialog(//show dialog window
                       context: context,
                       builder: (BuildContext context) {

@@ -1,12 +1,8 @@
 /*
 Lichnovsky Lukas
-
 Feb 2023
-
 KMI/XPROJ
-
 This is a file to create a home page with days of the week and then a selection of exercises from the database
-
 */
 
 import 'dart:convert';
@@ -165,35 +161,35 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                                     children: List<Widget>.generate(//generating of exercises list
                                       _exercises[i]['exercises'].length,// length of list
                                           (int j) {
-                                            return TextButton(// every exercise is button
-                                              onPressed: () {// set what to do on pressed
+                                        return TextButton(// every exercise is button
+                                          onPressed: () {// set what to do on pressed
 
-                                                setState(() {
+                                            setState(() {
 
-                                                    _selectedExercises.add({//on pressed add exercise to the list with selected exercises
-                                                      'name': _exercises[i]['exercises'][j]['name'],
-                                                      'repetition': _exercises[i]['exercises'][j]['repetition'],
-                                                      'time': _exercises[i]['exercises'][j]['time'],
-                                                      'series': _exercises[i]['exercises'][j]['series'],
-                                                    });
-                                                    _saveSelectedExercises(_getDayOfWeek(index+1));//calling of function to save this list for current day
-                                                });
-                                              },
-                                            child: Container(// setting of visual of button
-                                              decoration: BoxDecoration(
-                                                  color: Colors.black54,//set color of button
-                                                  borderRadius: BorderRadius.all(Radius.circular(5))//set circular corners of button
-                                              ),
-                                              width: double.infinity,//max width
-                                                height: 40,
-
-                                                child: Center(// set text of every button
-                                                child: Text(_exercises[i]['exercises'][j]['name'],//name of button generated from JSON database
-                                            style: TextStyle(color: Colors.white, fontSize: 15.0),//set color of text
-                                                  textAlign: TextAlign.center,
-                                                   ),),
+                                              _selectedExercises.add({//on pressed add exercise to the list with selected exercises
+                                                'name': _exercises[i]['exercises'][j]['name'],
+                                                'repetition': _exercises[i]['exercises'][j]['repetition'],
+                                                'time': _exercises[i]['exercises'][j]['time'],
+                                                'series': _exercises[i]['exercises'][j]['series'],
+                                              });
+                                              _saveSelectedExercises(_getDayOfWeek(index+1));//calling of function to save this list for current day
+                                            });
+                                          },
+                                          child: Container(// setting of visual of button
+                                            decoration: BoxDecoration(
+                                                color: Colors.black54,//set color of button
+                                                borderRadius: BorderRadius.all(Radius.circular(5))//set circular corners of button
                                             ),
-                                            );
+                                            width: double.infinity,//max width
+                                            height: 40,
+
+                                            child: Center(// set text of every button
+                                              child: Text(_exercises[i]['exercises'][j]['name'],//name of button generated from JSON database
+                                                style: TextStyle(color: Colors.white, fontSize: 15.0),//set color of text
+                                                textAlign: TextAlign.center,
+                                              ),),
+                                          ),
+                                        );
 
                                       },
                                     ),

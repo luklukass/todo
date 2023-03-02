@@ -1,10 +1,7 @@
 /*
 Lichnovsky Lukas
-
 Feb 2023
-
 KMI/XPROJ
-
 This file is to create widget with selected exercises for certain day
 */
 

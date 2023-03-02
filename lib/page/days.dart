@@ -144,7 +144,8 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                   icon: Icon(Icons.add,//add icon of button
                       color: Colors.redAccent, // set the icon color to red
                       size: 30),
-                  onPressed: () {//what to do on pressed of icon
+                  onPressed: () {
+                    _selectedExercises.clear();//what to do on pressed of icon
                     showDialog(//show dialog window
                       context: context,
                       builder: (BuildContext context) {

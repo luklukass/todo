@@ -58,19 +58,31 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
     return exercises;
   }
 
+  //////////////////////////////////
+  Future<void> _createJsonFiles() async {
+    final directory = await getApplicationDocumentsDirectory();
+    for (int weekday = DateTime.monday; weekday <= DateTime.sunday; weekday++) {
+      final file = File('${directory.path}/${_getDayOfWeek(weekday)}.json');
+      if (!(await file.exists())) {
+        for (int i = DateTime.monday; i <= DateTime.sunday; i++) {
+          String dayOfWeek = _getDayOfWeek(i);
+          saveSelectedExercisesToJson(dayOfWeek, []);
+        }
+      }
+    }
+  }
+
 
   @override
   void initState() {
     super.initState();
-    for (int i = DateTime.monday; i <= DateTime.sunday; i++) {
-      String dayOfWeek = _getDayOfWeek(i);
-      saveSelectedExercisesToJson(dayOfWeek, []);
-    }
+
     _getExercises().then((exercises) {
       setState(() {
         _exercises = exercises;
       });
     });
+    _createJsonFiles();
   }
 
 
@@ -101,6 +113,12 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
       appBar: AppBar( //header of home page
         backgroundColor:Colors.black87,// setting o background color
         title: Text('Tréninkový plánovač'),//displayed header text
+        actions: [
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () => exit(0),
+          ),
+        ],
       ),
       body: Container(
         decoration: const BoxDecoration(//setting of background of home page

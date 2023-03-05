@@ -24,7 +24,7 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
   List<Map<String, dynamic>> _selectedExercises = []; //list of selected exercises
 
 //////////////////////////////////////
-  Future<void> saveSelectedExercisesToJson(String dayOfWeek, List<Map<String, dynamic>> selectedExercises) async {
+  Future<void> saveSelectedExercisesToJson(String dayOfWeek, List<Map<String, dynamic>> selectedExercises) async {//function save selected exrcises to the file
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/$dayOfWeek.json');
     final jsonData = jsonEncode(_selectedExercises);
@@ -32,7 +32,7 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
   }
 
 //////////////////////////////////////
-  Future<List<Map<String, dynamic>>> loadSelectedExercisesFromJson(String dayOfWeek) async {
+  Future<List<Map<String, dynamic>>> loadSelectedExercisesFromJson(String dayOfWeek) async {//function to load selected exercises for certain day
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/$dayOfWeek.json');
     if (await file.exists()) {
@@ -59,7 +59,7 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
   }
 
   //////////////////////////////////
-  Future<void> _createJsonFiles() async {
+  Future<void> _createJsonFiles() async { //function to create files, when is app launched
     final directory = await getApplicationDocumentsDirectory();
     for (int weekday = DateTime.monday; weekday <= DateTime.sunday; weekday++) {
       final file = File('${directory.path}/${_getDayOfWeek(weekday)}.json');
@@ -74,15 +74,14 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
 
 
   @override
-  void initState() {
+  void initState() {//when is app launched make this
     super.initState();
-
     _getExercises().then((exercises) {
       setState(() {
         _exercises = exercises;
       });
     });
-    _createJsonFiles();
+    _createJsonFiles();//create json files when is app launched
   }
 
 
@@ -114,9 +113,9 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
         backgroundColor:Colors.black87,// setting o background color
         title: Text('Tréninkový plánovač'),//displayed header text
         actions: [
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () => exit(0),
+          IconButton(//exit button
+            icon: Icon(Icons.exit_to_app),//icon of exit button
+            onPressed: () => exit(0),//exit the app on pressed
           ),
         ],
       ),
@@ -153,7 +152,7 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
 
                           return SavedExercises(//new screen -widget - file training.dart
                             dayOfWeek: _getDayOfWeek(index+ 1),//required data to the new screen - widget file training.dart
-                            selectedExercises: _selectedExercises,
+                            selectedExercises: _selectedExercises,//required data to the new screen - list od selected exercises
                           );
                         },
                       ),
@@ -199,9 +198,7 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
 
 
                                             });
-                                            saveSelectedExercisesToJson(_getDayOfWeek(index+1), _selectedExercises);
-                                            print(loadSelectedExercisesFromJson(_getDayOfWeek(index+1)));
-                                            //Navigator.of(context).pop();
+                                            saveSelectedExercisesToJson(_getDayOfWeek(index+1), _selectedExercises);//call function save selected exercise to the certain file
                                           },
                                           child: Container(// setting of visual of button
                                             decoration: BoxDecoration(

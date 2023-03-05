@@ -26,7 +26,7 @@ class _SavedExercisesState extends State<SavedExercises> {
 
 
   //////////////////////////////////////
-  Future<void> saveSelectedExercisesToJson() async {
+  Future<void> saveSelectedExercisesToJson() async { //function save selected exrcises to the file
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/${widget.dayOfWeek}.json');
     final jsonData = jsonEncode(_selectedExercises);
@@ -34,7 +34,7 @@ class _SavedExercisesState extends State<SavedExercises> {
   }
 
 //////////////////////////////////////
-  Future<void> loadSelectedExercisesFromJson() async {
+  Future<void> loadSelectedExercisesFromJson() async {//function to load selected exercises for certain day
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/${widget.dayOfWeek}.json');
     if (await file.exists()) {
@@ -48,7 +48,7 @@ class _SavedExercisesState extends State<SavedExercises> {
 
 
   @override
-  void initState() {
+  void initState() { //when is screen launched make this
     super.initState();
     loadSelectedExercisesFromJson();
     _selectedExercises = widget.selectedExercises;

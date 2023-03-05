@@ -13,6 +13,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:training_planner_v1/page/training.dart';
 
 class TrainingPlanner extends StatefulWidget {
+
+
   @override
   _TrainingPlannerState createState() => _TrainingPlannerState();
 }
@@ -21,46 +23,40 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
   List _exercises = []; //list of all exercises
   List<Map<String, dynamic>> _selectedExercises = []; //list of selected exercises
 
-
-  Future<void> _saveSelectedExercises(String dayOfWeek) async { //function to save selected exercises
-    final dbDirectory = await getApplicationDocumentsDirectory();// path to store user generated app data
-    final dbFilePath = '${dbDirectory.path}/$dayOfWeek.json'; // load exercises from JSON file, where name of this file depends on selected day of week
-    final file = File(dbFilePath);
-
-
-    Map<String, dynamic> jsonData = {};
-    if (await file.exists()) {
-      final String contents = await file.readAsString();// read the existing JSON data from the file
-      jsonData = json.decode(contents);
-    }
-
-
-    if (!jsonData.containsKey('selectedExercises')) {
-      jsonData['selectedExercises'] = [];// update the selected exercises for the current day
-    }
-    jsonData['selectedExercises'] = _selectedExercises.map((exercise) { // mapping of JSON file
-      return {
-        'name': exercise['name'],
-        'repetition': exercise['repetition'],
-        'time': exercise['time'],
-        'series': exercise['series'],
-      };
-    }).toList();
-
-
-    await file.writeAsString(json.encode(jsonData)); // write the updated JSON data back to the file
+//////////////////////////////////////
+  Future<void> saveSelectedExercisesToJson(String dayOfWeek, List<Map<String, dynamic>> selectedExercises) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/$dayOfWeek.json');
+    final jsonData = jsonEncode(_selectedExercises);
+    await file.writeAsString(jsonData);
   }
 
-  Future<String> _loadexerciseAsset() async { //loading of main exercise database
+//////////////////////////////////////
+  Future<List<Map<String, dynamic>>> loadSelectedExercisesFromJson(String dayOfWeek) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/$dayOfWeek.json');
+    if (await file.exists()) {
+      final jsonData = await file.readAsString();
+      final selectedExercises = List<Map<String, dynamic>>.from(jsonDecode(jsonData));
+      return _selectedExercises = selectedExercises;
+    } else {
+      return [];
+    }
+  }
+
+
+//////////////////////////////////////
+  Future<String> _loadExerciseAsset() async { //loading of main exercise database
     return await rootBundle.loadString('assets/cviky.json');
   }
 
+
+//////////////////////////////////////
   Future<List<dynamic>> _getExercises() async { //getting of exercises from previous loading function
-    String jsonString = await _loadexerciseAsset();
+    String jsonString = await _loadExerciseAsset();
     List<dynamic> exercises = jsonDecode(jsonString);
     return exercises;
   }
-
 
 
   @override
@@ -110,9 +106,9 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
           ),
         ),
         child: ListView.builder(
-
           itemCount: 7, // one for each day of the week
           itemBuilder: (BuildContext context, int index) => ListTile(// create  list with days of week
+
             title: Text(_getDayOfWeek(index+ 1),//create title for every day
                 style: TextStyle(color: Colors.yellowAccent,//setting style of text
                     fontWeight: FontWeight.bold,
@@ -128,12 +124,14 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                   icon: Icon(Icons.keyboard_arrow_right,//arrow icon to button
                     color: Colors.redAccent, // set the icon color to red
                     size: 30,),
-                  onPressed: () {//what to do on pressed of icon
+                  onPressed: () async {//what to do on pressed of icon
                     Navigator.of(context).push(//navigate to new screen
                       MaterialPageRoute(//
                         builder: (BuildContext context) {
+
                           return SavedExercises(//new screen -widget - file training.dart
                             dayOfWeek: _getDayOfWeek(index+ 1),//required data to the new screen - widget file training.dart
+                            selectedExercises: _selectedExercises,
                           );
                         },
                       ),
@@ -145,7 +143,8 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                       color: Colors.redAccent, // set the icon color to red
                       size: 30),
                   onPressed: () {//what to do on pressed of icon
-                    _selectedExercises.clear();// this is was added due problem with adding exercises to certain day, now this list is cleaned after click on every add icon
+                   // _selectedExercises.clear();// this is was added due problem with adding exercises to certain day, now this list is cleaned after click on every add icon
+
                     showDialog(//show dialog window
                       context: context,
                       builder: (BuildContext context) {
@@ -155,6 +154,7 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                             child: Column(//return column with children
                               mainAxisSize: MainAxisSize.min,// in column is main axis vertical - this set the min of height of children
                               children: List<Widget>.generate(//generating of partition list
+
                                 _exercises.length,// length of list
                                     (int i) {
                                   return ExpansionTile(// create expansion/ collapse partition field - it is possible to see exercises to certain partition
@@ -162,19 +162,24 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                                     children: List<Widget>.generate(//generating of exercises list
                                       _exercises[i]['exercises'].length,// length of list
                                           (int j) {
+                                        loadSelectedExercisesFromJson(_getDayOfWeek(index + 1));
                                         return TextButton(// every exercise is button
                                           onPressed: () {// set what to do on pressed
 
-                                            setState(() {
+                                            setState(() => {
 
                                               _selectedExercises.add({//on pressed add exercise to the list with selected exercises
                                                 'name': _exercises[i]['exercises'][j]['name'],
                                                 'repetition': _exercises[i]['exercises'][j]['repetition'],
                                                 'time': _exercises[i]['exercises'][j]['time'],
                                                 'series': _exercises[i]['exercises'][j]['series'],
-                                              });
-                                              _saveSelectedExercises(_getDayOfWeek(index+1));//calling of function to save this list for current day
+                                              }),
+
+                                            
                                             });
+                                            saveSelectedExercisesToJson(_getDayOfWeek(index+1), _selectedExercises);
+                                            print(loadSelectedExercisesFromJson(_getDayOfWeek(index+1)));
+                                            //Navigator.of(context).pop();
                                           },
                                           child: Container(// setting of visual of button
                                             decoration: BoxDecoration(

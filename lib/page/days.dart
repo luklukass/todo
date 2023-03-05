@@ -60,8 +60,12 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
 
 
   @override
-  void initState() { // it is method which is called when app is started and exercises loaded
-    super.initState();// entry point to all app
+  void initState() {
+    super.initState();
+    for (int i = DateTime.monday; i <= DateTime.sunday; i++) {
+      String dayOfWeek = _getDayOfWeek(i);
+      saveSelectedExercisesToJson(dayOfWeek, []);
+    }
     _getExercises().then((exercises) {
       setState(() {
         _exercises = exercises;
@@ -143,7 +147,7 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                       color: Colors.redAccent, // set the icon color to red
                       size: 30),
                   onPressed: () {//what to do on pressed of icon
-                   // _selectedExercises.clear();// this is was added due problem with adding exercises to certain day, now this list is cleaned after click on every add icon
+                    // _selectedExercises.clear();// this is was added due problem with adding exercises to certain day, now this list is cleaned after click on every add icon
 
                     showDialog(//show dialog window
                       context: context,
@@ -175,7 +179,7 @@ class _TrainingPlannerState extends State<TrainingPlanner> {
                                                 'series': _exercises[i]['exercises'][j]['series'],
                                               }),
 
-                                            
+
                                             });
                                             saveSelectedExercisesToJson(_getDayOfWeek(index+1), _selectedExercises);
                                             print(loadSelectedExercisesFromJson(_getDayOfWeek(index+1)));
